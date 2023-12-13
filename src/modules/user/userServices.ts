@@ -1,3 +1,4 @@
+import { Mixed } from "mongoose";
 import { TUser } from "./userInterface";
 import { User } from "./userModel";
 
@@ -16,7 +17,10 @@ const createUser = async (userData: TUser) => {
 };
 
 const deleteUser = async (userId: any) => {
-  const deleteSingleUserData = await User.updateOne({ userId: userId }, { isActive: false });
+  const deleteSingleUserData = await User.updateOne(
+    { userId: userId },
+    { isActive: false }
+  );
   return deleteSingleUserData;
 };
 
@@ -25,4 +29,5 @@ export const UserServices = {
   getSingleUserData,
   deleteUser,
   createUser,
+  // updateUserData,
 };
