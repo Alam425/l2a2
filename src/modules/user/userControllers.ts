@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { UserServices } from "./userServices";
-import { TUser } from "./userInterface";
 import { User } from "./userModel";
 
 const getAllUsers = async (req: Request, res: Response) => {
@@ -72,7 +71,7 @@ const updateUserDataInDb = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const { body } = req;
     const user = await User.findOne({ userId: userId });
-    console.log(user);
+    // console.log(user);
 
     if (!user) {
       return res.status(404).json({
@@ -81,22 +80,23 @@ const updateUserDataInDb = async (req: Request, res: Response) => {
         data: null,
       });
     }
+    console.log(user.email, "        ", body.email);
 
-    user.userId = user.userId;
-    user.isActive = user.isActive;
-    user.orders = user.orders;
+    if (body.fullName) {
+      user.fullName.firstName = body.fullName.firstName || user.fullName.firstName;
+      user.fullName.lastName = body.fullName.lastName || user.fullName.lastName;
+    }
+    if (body.address) {
+      user.address.street = body.address.street || user.address.street;
+      user.address.city = body.address.city || user.address.city;
+      user.address.country = body.address.country || user.address.country;
+    }
     user.username = body.username || user.username;
     user.password = body.password || user.password;
-    user.fullName.firstName =
-      body.fullName.firstName || user.fullName.firstName;
-    user.fullName.lastName = body.fullName.lastName || user.fullName.lastName;
     user.password = body.password || user.password;
     user.age = body.age || user.age;
     user.email = body.email || user.email;
     user.hobbies = body.hobbies || user.hobbies;
-    user.address.street = body.address.street || user.address.street;
-    user.address.city = body.address.city || user.address.city;
-    user.address.country = body.address.country || user.address.country;
 
     const updateResult = await User.findOneAndUpdate(
       { userId: userId },
@@ -120,9 +120,11 @@ const updateUserDataInDb = async (req: Request, res: Response) => {
   }
 };
 
+const createUser = async(req: Request, res: Response) => {
+  const body = req.body;
+  
+}
+
 export const UserControllers = {
-  getAllUsers,
-  getSingleUser,
-  deleteSingleUser,
-  updateUserDataInDb,
+  getAllUsers, getSingleUser, deleteSingleUser, updateUserDataInDb, createUser
 };
