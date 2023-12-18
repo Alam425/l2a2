@@ -1,4 +1,3 @@
-import { Mixed } from "mongoose";
 import { TUser } from "./userInterface";
 import { User } from "./userModel";
 
@@ -7,16 +6,22 @@ const getAllUsersData = async () => {
 };
 
 const getSingleUserData = async (userId: any) => {
+  if (!(await User.isUserExists(userId))) {
+    return null;
+  }
   const singleUserData = await User.findOne({ userId: userId, isActive: true });
-  //  const result = await Student.findOne({ id: id }, { isDeleted : { $ne: "true" }})
   return singleUserData;
 };
 
-const createUser = async (userData: TUser) => {
-  console.log(userData);
+const createUser = async (users: TUser) => {
+  console.log(users);
 };
 
 const deleteUser = async (userId: any) => {
+  if ((await User.isUserExists(userId)) === null) {
+    return null;
+  }
+
   const deleteSingleUserData = await User.updateOne(
     { userId: userId },
     { isActive: false }
@@ -29,5 +34,4 @@ export const UserServices = {
   getSingleUserData,
   deleteUser,
   createUser,
-  // updateUserData,
 };

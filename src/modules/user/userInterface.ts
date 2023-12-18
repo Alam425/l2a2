@@ -26,6 +26,6 @@ export type TUser = {
 };
 
 
-// export interface UserModel extends Model<TUser>{
-
-// }
+export interface UserModel extends Model<TUser> {
+  isUserExists(userId: any) : Promise<TUser | null>
+}

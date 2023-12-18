@@ -1,5 +1,5 @@
-import { Schema, model } from "mongoose";
-import { TAddress, TFullName, TUser } from "./userInterface";
+import mongoose, { Model, Schema, model } from "mongoose";
+import { TAddress, TFullName, TUser, UserModel } from "./userInterface";
 
 
 const fullNameSchema = new Schema<TFullName>({
@@ -15,7 +15,7 @@ const addressSchema = new Schema<TAddress>({
 })
 
 
-const userSchema = new Schema<TUser>({
+const userSchema = new Schema<TUser, UserModel>({
   userId: { type: Number, required: true, unique: true },
   username: { type: String, required: [ true, 'Username must be provided' ], unique: true },
   password: { type: String, required: [ true, 'Password must be provided' ] },
@@ -29,4 +29,15 @@ const userSchema = new Schema<TUser>({
 })
 
 
-export const User = model<TUser>('User', userSchema);
+userSchema.post('save', function(){
+  this.password = ' ';
+  console.log('password hidden');
+})
+
+
+userSchema.statics.isUserExists = async (userId: any) => {
+  return await User.findOne({ userId: userId });
+}
+
+
+export const User: Model<TUser> = mongoose.model<TUser>('User', userSchema);
