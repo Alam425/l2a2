@@ -39,5 +39,4 @@ userSchema.statics.isUserExists = async (userId: any) => {
   return await User.findOne({ userId: userId });
 }
 
-
-export const User: Model<TUser> = mongoose.model<TUser>('User', userSchema);
+export const User: UserModel = mongoose.model<TUser, UserModel>('User', userSchema);

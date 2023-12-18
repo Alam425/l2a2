@@ -6,11 +6,15 @@ const getAllUsersData = async () => {
 };
 
 const getSingleUserData = async (userId: any) => {
-  if (!(await User.isUserExists(userId))) {
+  if (await User.isUserExists(userId)) {
+    const singleUserData = await User.findOne({
+      userId: userId,
+      isActive: true,
+    });
+    return singleUserData;
+  } else {
     return null;
   }
-  const singleUserData = await User.findOne({ userId: userId, isActive: true });
-  return singleUserData;
 };
 
 const createUser = async (users: TUser) => {
@@ -18,15 +22,15 @@ const createUser = async (users: TUser) => {
 };
 
 const deleteUser = async (userId: any) => {
-  if ((await User.isUserExists(userId)) === null) {
+  if (await User.isUserExists(userId)) {
+    const deleteSingleUserData = await User.updateOne(
+      { userId: userId },
+      { isActive: false }
+    );
+    return deleteSingleUserData;
+  } else {
     return null;
   }
-
-  const deleteSingleUserData = await User.updateOne(
-    { userId: userId },
-    { isActive: false }
-  );
-  return deleteSingleUserData;
 };
 
 export const UserServices = {
