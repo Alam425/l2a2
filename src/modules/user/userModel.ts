@@ -23,7 +23,7 @@ const userSchema = new Schema<TUser, UserModel>({
   age: { type: Number, required: true },
   email: { type: String, required: true },
   address: addressSchema,
-  id: { type: Number },
+  id: { type: Number, required: true },
   userId: { type: Number, required: true, unique: true },
   password: { type: String, required: [ true, 'Password is missing' ] },
   isActive: { type: Boolean, required: true },
