@@ -22,6 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -48,21 +57,23 @@ const userSchema = new mongoose_1.Schema({
     age: { type: Number, required: true },
     email: { type: String, required: true },
     address: addressSchema,
-    id: { type: Number },
+    id: { type: Number, required: true },
     userId: { type: Number, required: true, unique: true },
     password: { type: String, required: [true, 'Password is missing'] },
     isActive: { type: Boolean, required: true },
     hobbies: { type: [String] },
     orders: { type: [Object] },
 });
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) {
+userSchema.pre("save", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!this.isModified("password")) {
+            return next();
+        }
+        const salt = yield bcrypt_1.default.genSalt(12);
+        const hashedPassword = yield bcrypt_1.default.hash(this.password, salt);
+        this.password = hashedPassword;
         return next();
-    }
-    const salt = await bcrypt_1.default.genSalt(12);
-    const hashedPassword = await bcrypt_1.default.hash(this.password, salt);
-    this.password = hashedPassword;
-    return next();
+    });
 });
 userSchema.post("findOneAndUpdate", function (doc, next) {
     if (doc) {
@@ -77,7 +88,7 @@ userSchema.post("save", function (doc, next) {
     console.log("object");
     next();
 });
-userSchema.statics.isUserExists = async (userId) => {
-    return await exports.Userr.findOne({ userId: userId });
-};
+userSchema.statics.isUserExists = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield exports.Userr.findOne({ userId: userId });
+});
 exports.Userr = mongoose_1.default.model("User", userSchema);

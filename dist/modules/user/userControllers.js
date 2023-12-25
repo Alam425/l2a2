@@ -1,12 +1,21 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserControllers = void 0;
 const userServices_1 = require("./userServices");
 const userModel_1 = require("./userModel");
-const createUser = async (req, res) => {
+const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const body = req.body;
-        const result = await userServices_1.UserServices.createUser(body);
+        const result = yield userServices_1.UserServices.createUser(body);
         if (result === undefined) {
             return res.status(403).json({
                 success: false,
@@ -32,19 +41,19 @@ const createUser = async (req, res) => {
             data: error.message
         });
     }
-};
-const updateUserDataInDb = async (req, res) => {
+});
+const updateUserDataInDb = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userId } = req.params;
         const { body } = req;
-        if ((await userModel_1.Userr.isUserExists(userId)) === null) {
+        if ((yield userModel_1.Userr.isUserExists(userId)) === null) {
             return res.status(500).json({
                 success: false,
                 message: "User missing",
             });
         }
         else {
-            const user = await userModel_1.Userr.findOne({ userId: userId });
+            const user = yield userModel_1.Userr.findOne({ userId: userId });
             if (!user) {
                 return res.status(404).json({
                     success: false,
@@ -71,7 +80,7 @@ const updateUserDataInDb = async (req, res) => {
             user.age = body.age || user.age;
             user.email = body.email || user.email;
             user.hobbies = body.hobbies || user.hobbies;
-            const updateResult = await userModel_1.Userr.findOneAndUpdate({ userId: userId }, { $set: user }, { new: true });
+            const updateResult = yield userModel_1.Userr.findOneAndUpdate({ userId: userId }, { $set: user }, { new: true });
             if (updateResult) {
                 res.status(200).json({
                     success: true,
@@ -88,10 +97,10 @@ const updateUserDataInDb = async (req, res) => {
             data: error.message,
         });
     }
-};
-const getAllUsers = async (req, res) => {
+});
+const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = await userServices_1.UserServices.getAllUsersData();
+        const result = yield userServices_1.UserServices.getAllUsersData();
         res.json({
             success: true,
             message: "Users fetched successfully!",
@@ -108,11 +117,11 @@ const getAllUsers = async (req, res) => {
             },
         });
     }
-};
-const getSingleUser = async (req, res) => {
+});
+const getSingleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userId } = req.params;
-        const result = await userServices_1.UserServices.getSingleUserData(userId);
+        const result = yield userServices_1.UserServices.getSingleUserData(userId);
         if (result === null) {
             res.status(404).json({
                 success: false,
@@ -141,11 +150,11 @@ const getSingleUser = async (req, res) => {
             },
         });
     }
-};
-const deleteSingleUser = async (req, res) => {
+});
+const deleteSingleUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userId } = req.params;
-        const result = await userServices_1.UserServices.deleteUser(userId);
+        const result = yield userServices_1.UserServices.deleteUser(userId);
         if (result === null) {
             res.status(404).json({
                 success: false,
@@ -174,7 +183,7 @@ const deleteSingleUser = async (req, res) => {
             },
         });
     }
-};
+});
 exports.UserControllers = {
     getAllUsers,
     getSingleUser,
