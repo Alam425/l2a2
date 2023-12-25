@@ -1,25 +1,56 @@
 import { Request, Response } from "express";
 import { UserServices } from "./userServices";
-import { User } from "./userModel";
+import { Userr } from "./userModel";
+
+
+const createUser = async (req: Request, res: Response) => {
+  try {
+    const body = req.body;
+    const result = await UserServices.createUser(body);
+    if(result === undefined){
+      return res.status(403).json({
+          success: false,
+          message: 'User already exists'
+        })
+      }
+    if(result){
+      return res.status(200).json({
+        success: true,
+        message: 'User Created Successfully',
+        data: result
+      })
+    }
+    return res.status(500).json({
+      success: false,
+      message: 'User creation failed',
+    });
+} catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: "Error Occured!",
+      data: error.message
+    })
+  }
+};
+
 
 const updateUserDataInDb = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const { body } = req;
 
-    if ((await User.isUserExists(userId)) === null) {
+    if ((await Userr.isUserExists(userId)) === null) {
       return res.status(500).json({
         success: false,
-        message: "User updating failed",
+        message: "User missing",
       });
     } else {
-      const user = await User.findOne({ userId: userId });
+      const user = await Userr.findOne({ userId: userId });
 
       if (!user) {
         return res.status(404).json({
           success: false,
-          message: "User not found...!",
-          data: null,
+          message: "User not found...!"
         });
       }
 
@@ -34,14 +65,17 @@ const updateUserDataInDb = async (req: Request, res: Response) => {
         user.address.city = body.address.city || user.address.city;
         user.address.country = body.address.country || user.address.country;
       }
-      user.username = body.username || user.username;
-      user.password = body.password || user.password;
-      user.password = body.password || user.password;
+      if (body.password) {
+        user.password = body.password;
+      }
+      if (body.username) {
+        user.username = body.username;
+      }
       user.age = body.age || user.age;
       user.email = body.email || user.email;
       user.hobbies = body.hobbies || user.hobbies;
 
-      const updateResult = await User.findOneAndUpdate(
+      const updateResult = await Userr.findOneAndUpdate(
         { userId: userId },
         { $set: user },
         { new: true }
@@ -51,7 +85,7 @@ const updateUserDataInDb = async (req: Request, res: Response) => {
         res.status(200).json({
           success: true,
           message: "User updated successfully",
-          data: user,
+          data: updateResult,
         });
       }
     }
@@ -64,10 +98,6 @@ const updateUserDataInDb = async (req: Request, res: Response) => {
   }
 };
 
-const createUser = async (req: Request, res: Response) => {
-  const body = req.body;
-  UserServices.createUser(body);
-};
 
 const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -89,6 +119,7 @@ const getAllUsers = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 const getSingleUser = async (req: Request, res: Response) => {
   try {
@@ -123,6 +154,7 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
+
 const deleteSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -140,7 +172,7 @@ const deleteSingleUser = async (req: Request, res: Response) => {
       res.status(200).json({
         success: true,
         message: "User deleted successfully!",
-        data: result,
+        data: null,
       });
     }
   } catch (error: any) {
@@ -154,6 +186,7 @@ const deleteSingleUser = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 export const UserControllers = {
   getAllUsers,

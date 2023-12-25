@@ -1,4 +1,3 @@
-import { config } from "dotenv";
 import { Model } from "mongoose";
 
 export type TFullName = {
@@ -13,6 +12,7 @@ export type TAddress = {
 };
 
 export type TUser = {
+  id: number;
   userId: number;
   username: string;
   password: string;
